@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Personal Expense Tracker</title>
+    <link rel="stylesheet" href="personal.css">
+</head>
+<body>
+
+<div id="loginPage" class="auth-page">
+    <div class="auth-box">
+        <h1>💰 Expense Tracker</h1>
+        <p class="subtitle">Manage your money smarter</p>
+        <h2>Login</h2>
+        <input type="email" id="loginEmail" placeholder="Enter your email">
+        <input type="password" id="loginPassword" placeholder="Enter your password">
+        <button onclick="login()">Login</button>
+        <p id="loginMessage"></p>
+        <p class="switch">
+            Don't have an account?
+            <span onclick="showSignup()">Sign Up</span>
+        </p>
+    </div>
+</div>
+
+<div id="signupPage" class="auth-page hidden">
+    <div class="auth-box">
+        <h1>💰 Expense Tracker</h1>
+        <p class="subtitle">Create your account</p>
+        <h2>Sign Up</h2>
+        <input type="text" id="signupName" placeholder="Enter your name">
+        <input type="email" id="signupEmail" placeholder="Enter your email">
+        <input type="password" id="signupPassword" placeholder="Create password">
+        <button onclick="signup()">Create Account</button>
+        <p id="signupMessage"></p>
+        <p class="switch">
+            Already have an account?
+            <span onclick="showLogin()">Login</span>
+        </p>
+    </div>
+</div>
+
+<div id="dashboardPage" class="hidden">
+
+    <aside class="sidebar">
+        <div class="logo">
+            💰 <span>Expense Tracker</span>
+        </div>
+
+        <nav>
+            <a class="active" onclick="showSection('dashboard')">🏠 Dashboard</a>
+            <a onclick="showSection('transactions')">💳 Transactions</a>
+            <a onclick="showSection('budget')">💰 Budget</a>
+            <a onclick="showSection('reports')">📊 Reports</a>
+            <a onclick="showSection('settings')">⚙️ Settings</a>
+        </nav>
+
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </aside>
+
+    <main class="main">
+
+        <header class="topbar">
+            <div>
+                <h1>Welcome back, <span id="userName">User</span> 👋</h1>
+                <p>Here's your financial overview</p>
+            </div>
+
+            <div class="top-actions">
+                <select id="monthFilter">
+                    <option value="This Month">This Month</option>
+                    <option value="Last Month">Last Month</option>
+                    <option value="This Year">This Year</option>
+                    <option value="All">All Transactions</option>
+                </select>
+
+                <button onclick="toggleDarkMode()" class="icon-btn">🌙</button>
+
+                <div class="profile" id="profileName">U</div>
+            </div>
+        </header>
+
+        <section id="dashboardSection">
+
+            <div class="summary-grid">
+
+                <div class="summary-card income">
+                    <div>
+                        <p>Total Income</p>
+                        <h2 id="totalIncome">₹0.00</h2>
+                    </div>
+                    <span>💵</span>
+                </div>
+
+                <div class="summary-card expense">
+                    <div>
+                        <p>Total Expense</p>
+                        <h2 id="totalExpense">₹0.00</h2>
+                    </div>
+                    <span>💸</span>
+                </div>
+
+                <div class="summary-card balance">
+                    <div>
+                        <p>Current Balance</p>
+                        <h2 id="balance">₹0.00</h2>
+                    </div>
+                    <span>💰</span>
+                </div>
+
+            </div>
+
+            <div class="content-grid">
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Expense Overview</h2>
+                        <span>By Category</span>
+                    </div>
+
+                    <div id="expenseOverview" class="overview-list">
+                        <p>No expenses yet</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Income vs Expense</h2>
+                        <span>Overview</span>
+                    </div>
+
+                    <div class="bar-chart">
+
+                        <div class="bar-item">
+                            <div class="bar income-bar" id="incomeBar"></div>
+                            <span>Income</span>
+                        </div>
+
+                        <div class="bar-item">
+                            <div class="bar expense-bar" id="expenseBar"></div>
+                            <span>Expense</span>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="card transactions-card">
+
+                <div class="card-header">
+                    <h2>Recent Transactions</h2>
+                    <button onclick="showSection('transactions')">View All →</button>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th>Category</th>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="recentTransactions">
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </section>
+
+        <section id="transactionsSection" class="page-section hidden">
+
+            <div class="section-title">
+                <div>
+                    <h2>All Transactions</h2>
+                    <p>Manage your income and expenses</p>
+                </div>
+            </div>
+
+            <div class="filter-box">
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="🔍 Search transactions..."
+                    oninput="displayTransactions"
+                >
+
+                <select id="categoryFilter" onchange="displayTransactions()">
+                    <option value="All">All Categories</option>
+                    <option>Food</option>
+                    <option>Transport</option>
+                    <option>Shopping</option>
+                    <option>Bills</option>
+                    <option>Entertainment</option>
+                    <option>Education</option>
+                    <option>Salary</option>
+                    <option>Other</option>
+                </select>
+
+                <select id="typeFilter" onchange="displayTransactions()">
+                    <option value="All">All Types</option>
+                    <option value="Income">Income</option>
+                    <option value="Expense">Expense</option>
+                </select>
+
+            </div>
+
+            <div class="card">
+                <div class="table-container">
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th>Category</th>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="allTransactions">
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+        </section>
+
+        <section id="budgetSection" class="page-section hidden">
+
+            <div class="section-title">
+                <div>
+                    <h2>Monthly Budget 💰</h2>
+                    <p>Set spending limits for each category</p>
+                </div>
+            </div>
+
+            <div class="card budget-form-card">
+
+                <h2>Set Category Budget</h2>
+                <p class="budget-subtitle">Set your monthly spending limit</p>
+
+                <div class="budget-form">
+
+                    <div>
+                        <label>Category</label>
+                        <select id="budgetCategory">
+                            <option>Food</option>
+                            <option>Transport</option>
+                            <option>Shopping</option>
+                            <option>Bills</option>
+                            <option>Entertainment</option>
+                            <option>Education</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>Monthly Budget</label>
+                        <input
+                            type="number"
+                            id="budgetAmount"
+                            placeholder="₹ Enter budget"
+                            min="1"
+                        >
+                    </div>
+
+                    <button class="add-btn budget-save-btn" onclick="saveBudget()">
+                        Save Budget
+                    </button>
+
+                </div>
+
+                <p id="budgetMessage"></p>
+
+            </div>
+
+            <div class="budget-grid" id="budgetList">
+
+                <div class="card budget-empty">
+                    <h3>No budgets set yet</h3>
+                    <p>Set a category budget to start tracking your spending.</p>
+                </div>
+
+            </div>
+
+        </section>
+
+        <section id="reportsSection" class="page-section hidden">
+
+            <div class="section-title">
+                <div>
+                    <h2>Financial Reports 📊</h2>
+                    <p>Quick analysis of your spending</p>
+                </div>
+            </div>
+
+            <div class="report-grid">
+
+                <div class="report-card">
+                    <span>💸</span>
+                    <p>Highest Expense</p>
+                    <h2 id="highestExpense">₹0.00</h2>
+                </div>
+
+                <div class="report-card">
+                    <span>📁</span>
+                    <p>Most Used Category</p>
+                    <h2 id="mostCategory">-</h2>
+                </div>
+
+                <div class="report-card">
+                    <span>📈</span>
+                    <p>Average Expense</p>
+                    <h2 id="averageExpense">₹0.00</h2>
+                </div>
+
+            </div>
+
+        </section>
+
+        <section id="settingsSection" class="page-section hidden">
+
+            <div class="section-title">
+                <div>
+                    <h2>Settings ⚙️</h2>
+                    <p>Manage your account preferences</p>
+                </div>
+            </div>
+
+            <div class="card settings-card">
+
+                <h3>Account Information</h3>
+
+                <div class="setting-row">
+                    <span>Name</span>
+                    <strong id="settingsName">-</strong>
+                </div>
+
+                <div class="setting-row">
+                    <span>Email</span>
+                    <strong id="settingsEmail">-</strong>
+                </div>
+
+                <div class="setting-row">
+                    <span>Theme</span>
+                    <button onclick="toggleDarkMode()">Toggle Dark Mode 🌙</button>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <aside class="right-panel">
+
+        <div class="add-card">
+
+            <h2>Add New Transaction</h2>
+            <p>Track your income or expenses</p>
+
+            <label>Description</label>
+            <input
+                type="text"
+                id="description"
+                placeholder="Eg: Grocery shopping"
+            >
+
+            <label>Amount</label>
+            <input
+                type="number"
+                id="amount"
+                placeholder="₹ Enter amount"
+                min="1"
+            >
+
+            <label>Type</label>
+            <select id="transactionType">
+                <option value="Expense">Expense</option>
+                <option value="Income">Income</option>
+            </select>
+
+            <label>Category</label>
+            <select id="category">
+                <option>Food</option>
+                <option>Transport</option>
+                <option>Shopping</option>
+                <option>Bills</option>
+                <option>Entertainment</option>
+                <option>Education</option>
+                <option>Salary</option>
+                <option>Other</option>
+            </select>
+
+            <label>Date</label>
+            <input type="date" id="date">
+
+            <button class="add-btn" onclick="addTransaction()">
+                + Add Transaction
+            </button>
+
+            <p id="transactionMessage"></p>
+
+        </div>
+
+        <div class="quick-card">
+
+            <h2>Quick Stats</h2>
+
+            <div class="quick-row">
+                <span>Highest Expense</span>
+                <strong id="quickHighest">₹0.00</strong>
+            </div>
+
+            <div class="quick-row">
+                <span>Most Used Category</span>
+                <strong id="quickCategory">-</strong>
+            </div>
+
+            <div class="quick-row">
+                <span>Average Expense</span>
+                <strong id="quickAverage">₹0.00</strong>
+            </div>
+
+        </div>
+
+    </aside>
+
+    <div id="editModal" class="modal-overlay">
+
+        <div class="modal-box">
+
+            <div class="modal-header">
+                <h2>Edit Transaction</h2>
+
+                <button
+                    class="close-btn"
+                    type="button"
+                    onclick="closeEditModal()"
+                >
+                    &times;
+                </button>
+            </div>
+
+            <input type="hidden" id="editTransactionId">
+
+            <label>Description</label>
+            <input type="text" id="editDescription">
+
+            <label>Amount</label>
+            <input
+                type="number"
+                id="editAmount"
+                min="1"
+                step="0.01"
+            >
+
+            <label>Type</label>
+            <select id="editTransactionType">
+                <option value="Expense">Expense</option>
+                <option value="Income">Income</option>
+            </select>
+
+            <label>Category</label>
+            <select id="editCategory">
+                <option>Food</option>
+                <option>Transport</option>
+                <option>Shopping</option>
+                <option>Bills</option>
+                <option>Entertainment</option>
+                <option>Education</option>
+                <option>Salary</option>
+                <option>Other</option>
+            </select>
+
+            <label>Date</label>
+            <input type="date" id="editDate">
+
+            <div class="modal-actions">
+
+                <button
+                    class="cancel-btn"
+                    type="button"
+                    onclick="closeEditModal()"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    class="save-btn"
+                    type="button"
+                    onclick="saveEditedTransaction()"
+                >
+                    Save Changes
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="personal.js"></script>
+
+</body>
+</html>
